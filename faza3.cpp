@@ -106,15 +106,15 @@ public:
 		}
 	}
 	//& in fata lui ostream pentru apelul in cascada
-	friend ostream& operator<< (ostream& abc, Playlist p) { //operator<<, afisare, nu modif nimic
-		abc << "Nume playlist: " << p.getNume() << endl;
-		abc << "ID User: " << p.getIdUser() << endl;
-		abc << "Numar melodii: " << p.getNrMelodii() << endl;
-		abc << "Numar accesari: " << p.getAccesari() << endl;
+	friend ostream& operator<< (ostream& abc,const Playlist& p) { //operator<<, afisare, nu modif nimic
+		abc << "Nume playlist: " << p.nume << endl;
+		abc << "ID User: " << p.idUser << endl;
+		abc << "Numar melodii: " << p.nrMelodii << endl;
+		abc << "Numar accesari: " << p.accesari << endl;
 		abc << "Durata: ";
-		if (p.getDurataMelodii() != NULL) {
-			for (int i = 0; i < p.getNrMelodii(); i++)
-				abc << p.getDurataMelodii()[i] << "  ";
+		if (p.durataMelodii != NULL) {
+			for (int i = 0; i < p.nrMelodii; i++)
+				abc << p.durataMelodii[i] << "  ";
 			abc << "minute";
 		}
 		else
@@ -269,9 +269,14 @@ public:
 	Chitara* operator->() {               //operator->
 		return this;
 	}
-	Chitara operator--(int) {             //operator--
+	Chitara operator--() {               //operator-- pre
 		nrCorzi--;
 		return *this;
+	}
+	Chitara operator--(int abcdef) {     //operator-- post
+		Chitara initial = *this;
+		nrCorzi--;
+		return initial;
 	}
 	static int catiCm() {
 		return lungimeCm;
@@ -664,7 +669,9 @@ void main() {
 	cout << endl;
 	chitara3->setProducator("Fender"); //operator->
 	cout << chitara3.getProducator() << endl << endl;
-	chitara3--;                       //operator--
+	chitara3--;                       //operator-- post
+	cout << chitara3.getNrCorzi() << endl << endl;
+	--chitara3;                       //operator-- pre
 	cout << chitara3.getNrCorzi() << endl << endl;
 
 	cout << "Chitarele au o lungime medie de " << Chitara::catiCm() << " centimetri." << endl;
