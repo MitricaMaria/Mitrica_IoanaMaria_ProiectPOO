@@ -1,4 +1,5 @@
 #include<iostream>
+#include<string>
 using namespace std;
 //DOMENIU: MUZICA
 
@@ -631,6 +632,7 @@ void main() {
 		cout << vectorPlaylist[i];
 	}
 	cout << endl << endl;
+	delete[]vectorPlaylist;
 
 	int a = 2; //linii
 	int b = 3; //coloane
@@ -790,6 +792,7 @@ void main() {
 		cout << "Chitara " << i + 1 << ": " << endl;
 		cout << vectorChitara[i];
 	}
+	delete[]vectorChitara;
 
 
 	//clasa Trupa
@@ -956,4 +959,5 @@ void main() {
 		cout << "Trupa " << i + 1 << ": " << endl;
 		cout << vectorTrupa[i];
 	}
+	delete[]vectorTrupa;
 }
