@@ -106,7 +106,7 @@ public:
 			return durataMelodii[index];
 		}
 	}
-	friend ostream& operator<< (ostream& abc,const Playlist& p) { //operator<<, afisare, nu modif nimic
+	friend ostream& operator<< (ostream& abc, const Playlist& p) { //operator<<, afisare, nu modif nimic
 		abc << "Nume playlist: " << p.nume << endl;
 		abc << "ID User: " << p.idUser << endl;
 		abc << "Numar melodii: " << p.nrMelodii << endl;
@@ -138,7 +138,7 @@ public:
 			}
 		}
 		else {
-			cout << "Nu avem melodii"<<endl;
+			cout << "Nu avem melodii" << endl;
 			p.durataMelodii = NULL;
 		}
 		return xyz;
@@ -270,16 +270,16 @@ public:
 		return this;
 	}
 	Chitara operator--() {               //operator-- pre
-		this->nrCorzi-=5;
+		this->nrCorzi -= 5;
 		return *this;
 	}
 	Chitara operator--(int abcdef) {     //operator-- post
 		Chitara initial = *this;
-		this->nrCorzi-=5;
+		this->nrCorzi -= 5;
 		return initial;
 	}
 	friend ostream& operator<< (ostream& abc, const Chitara& c) { //operator<<
-		abc << "Numarul exemplarului: "<<c.nrExemplar<<endl;
+		abc << "Numarul exemplarului: " << c.nrExemplar << endl;
 		abc << "Lungimea in centimetri: " << c.lungimeCm << endl;
 		abc << "Producator: " << c.producator << endl;
 		abc << "Numar corzi: " << c.nrCorzi << endl;
@@ -294,15 +294,22 @@ public:
 	}
 	friend istream& operator>>(istream& xyz, Chitara& c) { //operator>>
 		cout << "Producator: ";
-		xyz >> c.producator;
+		char buffer[256];
+		xyz >> buffer;
+		c.setProducator(buffer);
+		if (c.producator != NULL)
+			delete[]c.producator;
+		c.producator = new char[strlen(buffer) + 1];
+		strcpy_s(c.producator, strlen(buffer) + 1, buffer);
+
 		cout << "Numar corzi: ";
 		xyz >> c.nrCorzi;
-		cout << "Electrica: ";
+		cout << "Electrica(0-NU,1-DA): ";
 		xyz >> c.esteElectrica;
 		cout << "Rating Emag: ";
-		if (c.esteElectrica == 1) 
+		if (c.esteElectrica == 1)
 			cout << "- stele, Emag nu comercializeaza chitare electrice." << endl;
-		else 
+		else
 			xyz >> c.ratingEmag;
 		return xyz;
 	}
@@ -448,7 +455,7 @@ public:
 	}
 	Trupa operator+ (const Trupa& t) {    //operator+
 		Trupa aux = *this;
-		aux.nrAlbume= nrAlbume + t.nrAlbume;
+		aux.nrAlbume = nrAlbume + t.nrAlbume;
 		if (aux.nrMelodiiAlbume != NULL)
 			delete[]aux.nrMelodiiAlbume;
 		if (aux.nrAlbume > 0) {
@@ -462,7 +469,7 @@ public:
 			aux.nrMelodiiAlbume = NULL;
 		return aux;
 	}
-	friend ostream& operator << (ostream & abc, const Trupa & t) {
+	friend ostream& operator << (ostream& abc, const Trupa& t) {
 		abc << "Anul formarii: " << t.anulFormarii << endl;
 		abc << "Fani: " << t.miiFani << " mii" << endl;
 		abc << "Nume: " << t.nume << endl;
@@ -636,23 +643,24 @@ void main() {
 
 	int a = 2; //linii
 	int b = 3; //coloane
-	Playlist** matricePlaylist = new Playlist*[a];
+	Playlist** matricePlaylist = new Playlist * [a];
 	for (int i = 0; i < a; i++) {
 		matricePlaylist[i] = new Playlist[b];
 		for (int j = 0; j < b; j++) {
-			cout << "Introduceti datele pentru obiectul i" << i+1 << "j" << j+1 << ": " << endl;
+			cout << "Introduceti datele pentru obiectul i" << i + 1 << "j" << j + 1 << ": " << endl;
 			cin >> matricePlaylist[i][j]; //citim
 		}
 	}
 	for (int i = 0; i < a; i++) {
 		for (int j = 0; j < b; j++) {
-			cout <<"i" <<i+1<<"j"<<j+1<<": "<<endl<< matricePlaylist[i][j] << " "; //afisam
+			cout << "i" << i + 1 << "j" << j + 1 << ": " << endl << matricePlaylist[i][j] << " "; //afisam
 		}
 		cout << endl;
 	}
 	for (int i = 0; i < a; i++)
 		delete[]matricePlaylist[i];
-	delete[]matricePlaylist; 
+	delete[]matricePlaylist;
+	delete[]playlist;
 
 
 	//clasa Chitara
@@ -726,7 +734,7 @@ void main() {
 		cout << "- stele, Emag nu comercializeaza chitare electrice." << endl;
 	else
 		cout << chitara3.getRatingEmag() << " stele" << endl;
-	cout <<endl;
+	cout << endl;
 	chitara3 = !chitara3; //operator!
 	cout << "Nr. Chitara: " << chitara3.getNrExemplar() << endl;
 	cout << "Producator: " << chitara3.getProducator() << endl;
@@ -770,11 +778,11 @@ void main() {
 
 	cout << "Operator -- postfixat" << endl << endl;
 	cout << chitara3 << endl << endl;
-	cout<<chitara3--;                    //operator-- post
+	cout << chitara3--;                    //operator-- post
 
 	cout << "Operator -- prefixat" << endl << endl;
 	cout << chitara4 << endl << endl;
-	cout<<--chitara4;                    //operator-- pre
+	cout << --chitara4;                    //operator-- pre
 
 	cout << "Chitarele au o lungime medie de " << Chitara::catiCm() << " centimetri." << endl;
 	cout << endl;
@@ -795,7 +803,7 @@ void main() {
 	delete[]vectorChitara;
 
 
-	//clasa Trupa
+	/*clasa Trupa*/
 	cout << "Clasa Trupa" << endl << endl;
 	Trupa trupa1;
 	cout << "Trupa: " << trupa1.getNume() << endl;
@@ -948,7 +956,7 @@ void main() {
 	cout << "Trupele au circa " << Trupa::catiFani() << " mii de fani.";
 	cout << endl << endl;
 
-	int m = 1;
+	int m = 2;
 	Trupa* vectorTrupa = new Trupa[m];
 	for (int i = 0; i < m; i++) { //introducerea datelor de la tastatura
 		cout << "Introduceti detaliile trupei " << i + 1 << ": " << endl;
@@ -960,4 +968,6 @@ void main() {
 		cout << vectorTrupa[i];
 	}
 	delete[]vectorTrupa;
+	delete[]cateMelodii;
+	
 }
