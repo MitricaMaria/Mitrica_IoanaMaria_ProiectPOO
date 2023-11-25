@@ -329,6 +329,103 @@ string chitaraCopii(const Chitara& lungime) {
 	return mesaj;
 }
 
+class Cantaret {
+private:
+	Chitara chitara;
+	static bool casaDiscuri; //daca apartine sau nu unei case de discuri
+	char* nume;
+	int varsta;
+	string gen;
+public:
+	Cantaret():chitara() {
+		nume = new char[strlen("Kurt") + 1];
+		strcpy_s(nume, strlen("Kurt") + 1, "Kurt");
+		varsta = 27;
+		gen = "Masculin";
+	}
+	Cantaret(char* name, int v, string g, Chitara c):varsta(v),gen(g),chitara(c) {
+		nume = new char[strlen(name) + 1];
+		strcpy_s(nume, strlen(name) + 1, name);
+	}
+	~Cantaret() {
+		if (nume != NULL)
+			delete[]nume;
+	}
+	Cantaret (const Cantaret& c):varsta(c.varsta),gen(c.gen),chitara(c.chitara) {
+		nume = new char[strlen(c.nume) + 1];
+		strcpy_s(nume, strlen(c.nume) + 1, c.nume);
+	}
+	Cantaret operator=(const Cantaret& c) {
+		if (this != &c) {
+			if (nume != NULL)
+				delete[]nume;
+			varsta = c.varsta;
+			gen = c.varsta;
+			chitara = c.chitara;
+			nume = new char[strlen(c.nume) + 1];
+			strcpy_s(nume, strlen(c.nume) + 1, c.nume);
+		}
+		return *this;
+	}
+	Chitara getChitara() {
+		return chitara;
+	}
+	static bool getCasaDiscuri() {
+		return casaDiscuri;
+	}
+	char* getNume() {
+		return nume;
+	}
+	int getVarsta() {
+		return varsta;
+	}
+	string getGen() {
+		return gen;
+	}
+	void setChitara(const Chitara& c) {
+			chitara = c;
+	}
+	static void setCasaDiscuri(bool casa) {
+		if (casa == 0 || casa == 1)
+			Cantaret::casaDiscuri = casa;
+	}
+	void setNume(char* name) {
+		if (name != NULL) {
+			nume = new char[strlen(name) + 1];
+			strcpy_s(nume, strlen(name) + 1, name);
+		}
+	}
+	void setVarsta(int v) {
+		if (v > 0) {
+			varsta = v;
+		}
+	}
+	void setGen(string g) {
+		if (g.length() >= 0)
+			gen = g;
+	}
+	friend ostream& operator<<(ostream& abc, const Cantaret& c) {
+		abc << "Nume: " << c.nume << endl;
+		abc << "Varsta: " << c.varsta << endl;
+		abc << "Gen: " << c.gen << endl;
+		abc << "Casa discuri(0-NU,1-DA): " << c.casaDiscuri << endl;
+		abc << "Chitara: " <<endl<<c.chitara;
+		return abc;
+	 }
+	friend istream& operator>>(istream& xyz, Cantaret& c) {
+		cout << "Introduceti numele: ";
+		xyz >> c.nume;
+		cout << "Introduceti varsta: ";
+		xyz>> c.varsta;
+		cout << "Introduceti genul: ";
+		xyz >> c.gen;
+		cout << "Introduceti informatiile despre chitara: ";
+		xyz >> c.chitara;
+		return xyz;
+	}
+};
+ bool Cantaret::casaDiscuri = 0;
+
 class Trupa {
 private:
 	const int anulFormarii;
@@ -970,4 +1067,12 @@ void main() {
 	delete[]vectorTrupa;
 	delete[]cateMelodii;
 	
+	//clasa Cantaret
+	Cantaret cantaret;
+	cin >> cantaret;
+	cout << cantaret << endl << endl;
+
+	Cantaret cantaret2;
+	cantaret2 = cantaret;
+	cout << cantaret2;
 }
