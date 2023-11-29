@@ -1,5 +1,5 @@
 #include<iostream>
-#include<string>
+#include<fstream>
 using namespace std;
 //DOMENIU: MUZICA
 
@@ -146,7 +146,22 @@ public:
 	static int cateAccesari() {
 		return accesari;
 	}
+	/*const int idUser;
+	static int accesari;
+	string nume;
+	int nrMelodii;
+	float* durataMelodii;*/
 	friend float durataTotala(const Playlist& durata);
+	friend ofstream& operator<<(ofstream& abc, const Playlist& p) {
+		abc << "Id: " << p.idUser << " Accesari: " << p.accesari << " Nume: " << p.nume << " Numar melodii: " << p.nrMelodii << " Durata melodiilor: ";
+		if (p.nrMelodii > 0 && p.durataMelodii != NULL) {
+			for (int i = 0; i < p.nrMelodii; i++)
+				abc << p.durataMelodii[i] << " ";
+		}
+		else
+			abc << " - ";
+		return abc;
+	}
 };
 int Playlist::accesari = 0;
 
@@ -758,6 +773,9 @@ void main() {
 		delete[]matricePlaylist[i];
 	delete[]matricePlaylist;
 	delete[]playlist;
+	Playlist playlistFisierText;
+	ofstream f("fisier_text.txt", ios::app);
+	f << playlistFisierText;
 
 
 	//clasa Chitara
