@@ -164,6 +164,7 @@ public:
 	}
 };
 int Playlist::accesari = 0;
+//faza 7
 
 float durataTotala(const Playlist& durata) {
 	if (durata.durataMelodii == NULL)
