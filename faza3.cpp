@@ -3,6 +3,14 @@
 using namespace std;
 //DOMENIU: MUZICA
 
+class Biblioteca:public Playlist {
+private:
+	string numeUser;
+	int nrPlaylisturi;
+	float durate;
+public:
+};
+
 class Playlist {
 private:
 	const int idUser;
