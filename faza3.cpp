@@ -1,15 +1,8 @@
 #include<iostream>
 #include<fstream>
+#include<string>
 using namespace std;
 //DOMENIU: MUZICA
-
-class Biblioteca:public Playlist {
-private:
-	string numeUser;
-	int nrPlaylisturi;
-	float durate;
-public:
-};
 
 class Playlist {
 private:
@@ -154,11 +147,6 @@ public:
 	static int cateAccesari() {
 		return accesari;
 	}
-	/*const int idUser;
-	static int accesari;
-	string nume;
-	int nrMelodii;
-	float* durataMelodii;*/
 	friend float durataTotala(const Playlist& durata);
 	friend ofstream& operator<<(ofstream& abc, const Playlist& p) {
 		abc << "Id: " << p.idUser << " Accesari: " << p.accesari << " Nume: " << p.nume << " Numar melodii: " << p.nrMelodii << " Durata melodiilor: ";
@@ -170,9 +158,21 @@ public:
 			abc << " - ";
 		return abc;
 	}
+	friend ifstream& operator>>(ifstream& in, Playlist& p) {
+		in >> p.accesari;
+		in >> p.nume;
+		in >> p.nrMelodii;
+		if (p.nrMelodii > 0 && p.durataMelodii != NULL) {
+			for (int i = 0; i < p.nrMelodii; i++)
+				in >> p.durataMelodii[i];
+			cout << " ";
+		}
+		else
+			p.durataMelodii = NULL;
+		return in;
+	}
 };
 int Playlist::accesari = 0;
-//faza 7
 
 float durataTotala(const Playlist& durata) {
 	if (durata.durataMelodii == NULL)
@@ -341,6 +341,27 @@ public:
 		return lungimeCm;
 	}
 	friend string chitaraCopii(const Chitara& lungime);
+	void scrieInFisierBinar(fstream& f) const {
+		f.write((char*)&nrCorzi, sizeof(int));
+		f.write((char*)&esteElectrica, sizeof(bool));
+		f.write((char*)&ratingEmag, sizeof(float));
+		int lungime = strlen(this->producator);
+		f.write((char*)&lungime, sizeof(int));
+		f.write(this->producator, lungime);
+	}
+	void citesteDinFisierBinar(fstream& f) {
+		f.read((char*)&nrCorzi, sizeof(int));
+		f.read((char*)&esteElectrica, sizeof(bool));
+		f.read((char*)&ratingEmag, sizeof(float));
+		int lungime;
+		f.read((char*)&lungime, sizeof(int));
+		if (this->producator != NULL) {
+			delete[]this->producator;
+		}
+		this->producator = new char[lungime + 1];
+		f.read(this->producator, lungime);
+		producator[lungime] = '\0';
+	}
 };
 int Chitara::lungimeCm = 100;
 
@@ -353,7 +374,7 @@ string chitaraCopii(const Chitara& lungime) {
 	return mesaj;
 }
 
-class Cantaret {
+class Cantaret {   //Cantaretul are o chitara
 private:
 	Chitara chitara;
 	static bool casaDiscuri; //daca apartine sau nu unei case de discuri
@@ -384,7 +405,7 @@ public:
 			if (nume != NULL)
 				delete[]nume;
 			varsta = c.varsta;
-			gen = c.varsta;
+			gen = c.gen;
 			chitara = c.chitara;
 			nume = new char[strlen(c.nume) + 1];
 			strcpy_s(nume, strlen(c.nume) + 1, c.nume);
@@ -447,8 +468,23 @@ public:
 		xyz >> c.chitara;
 		return xyz;
 	}
+	void experienta() {
+		ofstream f("fisier2.txt");
+		if (varsta < 30) {
+			f << "Acesta este un cantaret tanar\n";
+		}
+		else
+			f << "Acesta este un cantaret experimentat\n";
+		f.close();
+		ifstream g("fisier2.txt");
+		string mesaj;
+		getline(g, mesaj);
+		cout << mesaj;
+		g.close();
+	}
 };
  bool Cantaret::casaDiscuri = 0;
+
 
 class Trupa {
 private:
@@ -632,11 +668,84 @@ public:
 	void modificareNrAlbume(int nrNou) {
 		if (nrNou == 0)
 			nrAlbume = nrNou;
-
+	}
+	void scriereInBinar(fstream& f) const {
+		f.write((char*)&nrAlbume, sizeof(int));
+	}
+	void citireInBinar(fstream& f) {
+		f.read((char*)&nrAlbume, sizeof(int));
 	}
 };
 float Trupa::miiFani = 20.5;
 
+class Album :public Playlist { // Albumul este un playlist
+private:
+	bool estePublic; //daca albumul a fost facut public de catre artist sau nu
+public:
+	Album() :Playlist() {
+		this->estePublic = 1;
+	}
+	Album(bool epublic) :Playlist(25, "Phases") {
+		this->estePublic = epublic;
+	}
+	~Album() {}
+	Album(const Album& a) :Playlist(a) {
+		this->estePublic = a.estePublic;
+	}
+	Album operator=(const Album& a) {
+		if (this != &a) {
+			Playlist::operator=(a);
+			this->estePublic = a.estePublic;
+		}
+		return *this;
+	}
+	bool getEstePublic() {
+		return estePublic;
+	}
+	void setEstePublic(bool ePublic) {
+		if (ePublic == 0 || ePublic == 1)
+			this->estePublic = ePublic;
+	}
+	friend ostream& operator<<(ostream& out, const Album& a) {
+		out << "Albumul este public (0-NU, 1-DA): " << a.estePublic << endl;
+		out << (Playlist)a;
+		return out;
+	}
+};
+class TrupaRock :public Trupa {  //o trupa rock este o trupa
+private:
+	int nrMembri;
+public:
+	TrupaRock() :Trupa() {
+		this->nrMembri = 3;
+	}
+	TrupaRock(int nr) : Trupa(1981, "Metallica") {
+		this->nrMembri = nr;
+	}
+	TrupaRock(const TrupaRock& t) :Trupa(t) {
+		this->nrMembri = t.nrMembri;
+	}
+	TrupaRock operator=(const TrupaRock& t) {
+		if (this != &t) {
+			this->nrMembri = t.nrMembri;
+			Trupa::operator=(t);
+		}
+		return *this;
+	}
+	friend ostream& operator<<(ostream& out, const TrupaRock& t) {
+		out << " Membri trupa: " << t.nrMembri << endl;
+		out << (Trupa)t;
+		return out;
+	}
+	int getNrMembri() {
+		return nrMembri;
+	}
+	void setNrMembri(int nr) {
+		if (nr > 1) {
+			this->nrMembri = nr;
+		}
+	}
+};
 
 
 void main() {
@@ -783,8 +892,13 @@ void main() {
 	delete[]matricePlaylist;
 	delete[]playlist;
 	Playlist playlistFisierText;
-	ofstream f("fisier_text.txt", ios::app);
+	ofstream f("fisier_text1.txt", ios::out);
 	f << playlistFisierText;
+	ifstream g("fisier_text1.txt", ios::in);
+	g >> playlistFisierText;
+	cout << playlistFisierText;
+	f.close();
+	g.close();
 
 
 	//clasa Chitara
@@ -925,6 +1039,16 @@ void main() {
 		cout << vectorChitara[i];
 	}
 	delete[]vectorChitara;
+	Chitara ch;
+	fstream fis2("fisier_binar1.bin", ios::binary | ios::out);
+	ch.scrieInFisierBinar(fis2);
+	fis2.close();
+	Chitara cc;
+	fstream fis1("fisier_binar1.bin", ios::binary | ios::in);
+	cc.citesteDinFisierBinar(fis1);
+	cout << cc;
+	fis1.close();
+	
 
 
 	/*clasa Trupa*/
@@ -1093,7 +1217,25 @@ void main() {
 	}
 	delete[]vectorTrupa;
 	delete[]cateMelodii;
+	Trupa trupa10(2010, "Exemplu", 3, new int[3] {10, 12, 15});
+	fstream x("trupa.bin", ios::out | ios::binary);
+	trupa1.scriereInBinar(x);
+	x.close();
+
+	fstream y("trupa.bin", ios::in | ios::binary);
+	Trupa trupaCitita;
+	trupaCitita.citireInBinar(y);
+	cout << trupaCitita.getNrAlbume() << endl;
+	if (trupaCitita.getNrAlbume() <= 2) {
+		cout << "Aceasta trupa este la inceput de drum." << endl;
+	}
+	else {
+		cout << "Aceasta trupa este una de succes." << endl;
+	}
+	y.close();
 	
+	 
+	 
 	//clasa Cantaret
 	Cantaret cantaret;
 	cin >> cantaret;
@@ -1102,4 +1244,33 @@ void main() {
 	Cantaret cantaret2;
 	cantaret2 = cantaret;
 	cout << cantaret2;
+
+	Cantaret cantaret3;
+	cout << cantaret3 << endl;
+	cantaret3.experienta();
+	cantaret3.setVarsta(40);
+	cantaret3.experienta();
+
+
+	//clasa Album
+	Album a1;
+	cout << a1 << endl;
+
+	Album a2(0);
+	Album a3 = a2;
+	cout << a3 << endl;
+	a3.setAccesari(200);
+	cout << a3 << endl;
+
+	//clasa TrupaRock
+	TrupaRock t1;
+	cout << t1 << endl;
+
+	TrupaRock t2(5);
+	cout << t2 << endl;
+	TrupaRock t3;
+	t3 = t2;
+	cout << t3 << endl;
+	t3.setNrMembri(4);
+	cout << t3 << endl;
 }
